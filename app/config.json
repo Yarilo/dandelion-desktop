@@ -1,0 +1,16 @@
+{
+  "osx" : {
+    "title": "Dandelion",
+    "background": "assets/installer.png",
+    "icon": "assets/tray_logo.icns",
+    "icon-size": 80,
+    "contents": [
+      { "x": 438, "y": 240, "type": "link", "path": "/Applications" },
+      { "x": 192, "y": 240, "type": "file" }
+    ]
+  },
+  "win" : {
+    "title" : "Dandelion",
+    "icon" : "assets/tray_logo.ico"
+  }
+}

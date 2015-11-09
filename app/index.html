@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Dandelion</title>
+    <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/dist/css/style.css" rel="stylesheet">
+  </head>
+  <body>
+      <ul class="nav nav-tabs ">
+      <li class="active full-width" text-align="center"><a href="#home" class="text-center" data-toggle="tab" aria-expanded="true">Inicio</a></li>
+      <li class="full-width"><a href="#profile" class="text-center" data-toggle="tab" aria-expanded="false">Cuenta</a></li>
+      <li class="full-width"><a href="#server" class="text-center" data-toggle="tab" aria-expanded="false">Servidor</a></li>
+      <li class="full-width"><a href="#sync" class="text-center" data-toggle="tab" aria-expanded="false">Sincronizacion</a></li>
+    </ul>
+  </div>
+    <div id="myTabContent" class="tab-content container" text-align="center">
+      <div class="tab-pane fade active in container" id="home" text-align="center">
+        <br>
+        <div class="col-xs-2"><img src="assets/logo.png"></img></div>
+        <div class="col-xs-offset-4">
+          <br>
+          <br>
+          <legend id="welcome_user">Yarilo</legend>
+          <p class="lead" id="date">18-08-15</p>
+          <button type="submit" class="btn" onclick="openServerAddress()"> Ir al servidor</button>
+          <button type="reset" class="btn btn-default" onclick="openServerFolder()">Abrir carpeta local</button>
+        </div>
+      </div>
+
+      <div class="tab-pane fade container" id="profile">
+        <br>
+        <form class="form-horizontal">
+        <div class="form-group">
+          <label for="inputUser" class="col-md-2 control-label">Usuario</label>
+          <div class="col-md-10">
+            <input type="text" class="form-control" id="dandelion_username" placeholder="">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputPassword" class="col-md-2 control-label">Contraseña</label>
+          <div class="col-md-10">
+            <input type="password" class="form-control" id="password" placeholder="">
+          </div>
+          </div>
+          <div class="form-group">
+          <br>
+          <div class="col-xs-8 col-xs-offset-4">
+            <button type="submit" class="btn btn-primary" onclick="sendData(['dandelion_username','password', 'email'])">Guardar</button>
+          </div>
+        </div>
+        </form>
+      </div>
+
+      <div class="tab-pane fade container" id="server"><br>
+        <form class="form-horizontal">
+
+        <div class="form-group">
+          <label for="inputEmail" class="col-md-2 control-label">URL</label>
+          <div class="col-md-10">
+            <input type="text" class="form-control" id="server_address" placeholder="127.0.0.1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputPassword" class="col-md-2 control-label">Puerto</label>
+          <div class="col-md-10">
+            <input type="numeric" class="form-control" id="server_port" placeholder="80">
+            <div class="checkbox">
+              <label><input type="checkbox" onclick="changeServerAddress()" id="https"> Usar HTTPs</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-xs-8 col-xs-offset-4">
+            <button type="submit" class="btn btn-primary" onclick="sendData(['server_address','server_port', 'https'])">Guardar</button>
+          </div>
+        </div>
+      </form>
+
+      </div>
+
+      <div class="tab-pane fade container" id="sync">
+        <br>
+        <form class="form-horizontal">
+        <div class="form-group">
+          <label for="inputEmail" class="col-md-2 control-label">Carpeta local</label>
+          <div class="col-md-10">
+              <div class="input-group">
+                <input type="text" id="server_folder" class="form-control">
+                <span class="input-group-btn">
+                    <span class="btn btn-default btn-file">
+                         Elegir
+                        <input type="file" onChange="selectFolder(event)" webkitdirectory directory multiple>
+                    </span>
+                </span>
+            </div>
+          </div>
+
+        </div>
+        <div class="form-group">
+          <label for="inputPassword" class="col-md-2 control-label">Sincronizar cada</label>
+          <div class="col-md-8">
+            <input type="number" class="form-control" id="sync_freq" placeholder="5"
+            <label>sec.</label>
+          </div>
+          </div>
+          <div class="form-group">
+          <br>
+          <div class="col-xs-8 col-xs-offset-4">
+            <button type="submit" class="btn btn-primary" onclick="sendData(['server_folder','sync_freq'])">Guardar</button>
+          </div>
+        </div>
+        </form>
+      </div>
+    </div>
+
+  <script type="text/javascript">
+    window.$ = window.jQuery = require(__dirname+'/assets/dist/js/jquery-1.11.3.min.js');
+    var ipc = require('ipc');
+    var serverFolder = "";
+    var shell = require('shell');
+    var year = new Date().getFullYear();
+	var day = new Date().getUTCDate();
+	var month = new Date().getMonth() + 1;
+	var date = day + "-" + month +  "-" + year;
+    //Initialize Home
+    document.getElementById('welcome_user').innerHTML = "Bienvenido " + process.env.DANDELION_USERNAME;
+    document.getElementById('date').innerHTML = date;
+
+    //Initialize placeholders
+    inputs = document.getElementsByTagName('input');
+    for (var i=0; i<inputs.length; i++)
+    {
+        if(inputs[i].id == "password")
+        {
+            continue;
+        }
+		if(inputs[i].id == "https" && process.env.HTTPS == 'true')
+		{
+			document.getElementById('server_port').value = 443;
+		}
+        inputs[i].placeholder = process.env[inputs[i].id.toUpperCase()];
+    }
+    //Initialize checkbox
+    if(process.env.HTTPS == 'true')
+    {
+        document.getElementById('https').checked = true;
+    }
+    else
+    {
+        document.getElementById('https').checked = false;
+    }
+
+	function changeServerAddress()
+	{
+		var serverAddressInput = document.getElementById('server_address');
+		var portInput = document.getElementById('server_port');
+		if (document.getElementById('https').checked)
+		{
+			var serveAddress = serverAddressInput.value || serverAddressInput.placeholder;
+			serverAddres = serveAddress.replace("http", "https");
+			serverAddressInput.value = serverAddres;
+			serverAddressInput.placeholder = serverAddres;
+
+			portInput.value = 443;
+			portInput.placeholder = 443;
+		}
+		else
+		{
+			var serveAddress = serverAddressInput.value || serverAddressInput.placeholder;
+			serverAddres = serveAddress.replace("https", "http");
+			serverAddressInput.value = serverAddres;
+			serverAddressInput.placeholder = serverAddres;
+
+			portInput.value = 80;
+			portInput.placeholder = 80;
+		}
+	}
+    function openServerFolder()
+    {
+        shell.showItemInFolder(process.env.SERVER_FOLDER);
+    }
+    function openServerAddress()
+    {
+        shell.openExternal(process.env.SERVER_ADDRESS + '/#/resources/?user=' + process.env.DANDELION_USERNAME + '&token=' + process.env.TOKEN);
+    }
+    function selectFolder(e)
+    {
+      serverFolder = e.target.files[0].path;
+      document.getElementById('server_folder').value = serverFolder;
+    }
+    function sendData(fieldArray)
+    {
+        var values= {};
+        fieldArray.forEach(function(field)
+        {
+          var element = document.getElementById(field);
+          if(!element)
+          {
+              return;
+          }
+          field = field.toUpperCase();
+          if (element.type == 'checkbox')
+          {
+            values[field] = element.checked;
+          }
+          else
+          {
+            values[field] = element.value || element.placeholder;
+          }
+        });
+        ipc.send('config-form-complete', values);
+    }
+  </script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

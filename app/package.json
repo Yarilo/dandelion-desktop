@@ -1,0 +1,41 @@
+{
+  "name": "dandelion-desktop-client",
+  "description": "\"Desktop client for Dandelion\"",
+  "version": "1.0.0",
+  "main": "main.js",
+  "author": "Yarilo Villanueva",
+  "license": "GNU-GPL",
+  "scripts": {
+
+    "clean": "rm -rf ./dist",
+	"clean:linux": "rm -rf ../dist/linux",
+    "clean:osx": "rm -rf ../dist/osx",
+    "clean:win": "rm -rf ../dist/win",
+
+    "pack": "npm run clean && npm run pack:linux && npm run pack:osx && npm run pack:win",
+	"pack:linux": "npm run clean:linux && electron-packager ./ dandelion --out=../dist/linux --platform=linux --arch=x64 --version=0.33.7 --asar=true --icon=assets/tray_logo.ico",
+    "pack:osx": "npm run clean:osx && electron-packager ./ dandelion --out=../dist/osx --platform=darwin --arch=x64 --version=0.33.7 --asar=true --icon=assets/tray_logo.ico",
+    "pack:win": "npm run clean:win && electron-packager ./ dandelion --out=../dist/win --platform=win32 --arch=x64 --version=0.33.7 --asar=true --icon=assets/tray_logo.ico",
+
+    "build": "npm run build:osx && npm run build:win",
+    "build:osx": "npm run pack:osx && electron-builder ../dist/osx/dandelion-darwin-x64 --platform=osx --out=../dist/osx/ --config=config.json",
+    "build:win": "npm run pack:win && electron-builder ../dist/win/dandelion-win32-x64 --platform=win --out=../dist/win/ --config=config.json"
+  },
+  "dependencies": {
+    "async": "^1.4.2",
+    "chokidar": "^1.0.3",
+    "dotenv": "^1.2.0",
+    "electron-builder": "^2.0.1",
+    "fs-extra": "^0.24.0",
+    "line-reader": "^0.2.4",
+    "prototypes": "^0.4.1",
+    "readdirp": "^2.0.0",
+    "request": "^2.58.0",
+    "requests": "^0.1.6",
+    "underscore": "^1.8.3",
+    "upath": "^0.1.6"
+  },
+  "devDependencies": {
+    "electron-packager": "^5.1.0"
+  }
+}

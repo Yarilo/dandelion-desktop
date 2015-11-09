@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta charset="UTF-8">
+    <title>Dandelion</title>
+    <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/dist/css/style.css" rel="stylesheet">
+  </head>
+  <body>
+<div class="container-fluid">
+<form class="form-signin">
+    <h2 class="form-signin-heading text-center"><img src ="assets/logo.png" alt="Welcome, please log in."></h2>
+    <input id="dandelion_username" class="form-control" placeholder="Usuario" required autofocus>
+    <input type="password" id="password" class="form-control" placeholder="Contraseña" required>
+    <div id="initial_configuration">
+        <input type="text" class="form-control" id="server_address" placeholder="Dirección servidor">
+        <div class="input-group">
+          <input type="text" id="server_folder" placeholder="Carpeta a sincronizar" class="form-control">
+          <span class="input-group-btn">
+              <span class="btn btn-default btn-file">
+                   Elegir
+                  <input type="file" onChange="selectFolder(event)" webkitdirectory directory multiple>
+              </span>
+          </span>
+    </div>
+   </div>
+   <button class="btn btn-lg btn-primary btn-block" onclick="makeLogin(['dandelion_username', 'password', 'server_folder', 'server_address'])" type="submit">Acceder</button>
+	<div id="account_options">
+	<div class="row">
+        <div class="col-xs-2">
+            <a href="" onclick="goToSignup()">Registrarse</a>
+        </div>
+        <div class="col-xs-offset-3 col-xs-7">
+            <a href="" onclick="goToForgotPassword()">¿Olvidaste la contraseña?</a>
+        </div>
+    </div>
+	</div>
+    <div>
+        <!--<div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+            <div class="text-center">Contraseña incorrecta, por favor, inténtelo de nuevo</div>
+        </div>-->
+    </div>
+</form>
+</div>
+<script type="text/javascript">
+  window.$ = window.jQuery = require(__dirname+'/assets/dist/js/jquery-1.11.3.min.js');
+  var ipc = require('ipc');
+  var serverFolder = '';
+  var shell = require('shell');
+  if(process.env.SERVER_ADDRESS && process.env.SERVER_FOLDER)
+  {
+      document.getElementById("initial_configuration").style.display = 'none';
+  }
+  else
+  {
+	  document.getElementById("account_options").style.display = 'none';
+  }
+  function goToSignup()
+  {
+      shell.openExternal(process.env.SERVER_ADDRESS + "/#/signup");
+  }
+
+  function goToForgotPassword()
+  {
+      shell.openExternal(process.env.SERVER_ADDRESS + "/#/forgot");
+  }
+
+  function selectFolder(e)
+  {
+    serverFolder = e.target.files[0].path;
+    document.getElementById('server_folder').value = serverFolder;
+  }
+  function makeLogin(fieldArray)
+  {
+      var values= {};
+      fieldArray.forEach(function(field)
+      {
+        var element = document.getElementById(field);
+        if(!element)
+        {
+            return;
+        }
+        field = field.toUpperCase();
+		if (element.id == 'server_address')
+        {
+			var serverAddres = element.value;
+			if(serverAddres[serverAddres.length-1] == '/')
+			{
+				serverAddres = serverAddres.substring(0, serverAddres.length-1);
+			}
+			values[field] = serverAddres;
+        }
+        else
+        {
+          values[field] = element.value;
+        }
+      });
+	ipc.send('login-form-complete', values);
+   }
+</script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
