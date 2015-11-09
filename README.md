@@ -26,7 +26,7 @@ The installers/packages will be generated under the `dist` directory on the root
 
 ## Disclaimer
 
-This client is part of [Dandelion Platform](https://github.com/Yarilo/dandelion-platform), an online storage solution built for a Computer Engineering Master's Thesis. It is presented here as an academical work, and therefore is not suitable for production use.
+This client is part of [Dandelion Platform](https://github.com/Yarilo/dandelion-platform), an online storage solution built for a Computer Engineering Master's Thesis. It is presented here as an academic work, and therefore is not suitable for production use.
 
 ## License
 GNU - GPL v3
