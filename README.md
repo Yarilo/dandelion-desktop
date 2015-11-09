@@ -1,5 +1,5 @@
 
-# Dandelion Desktop client
+# Dandelion desktop client
 
 Desktop client for [Dandelion Platform](https://github.com/Yarilo/dandelion-platform). Built using [Electron Framework] (http://electron.atom.io/),  offers a GUI and a simple sync algorithm to keep user's desktop resources synched with an online remote repository.
 
@@ -22,7 +22,7 @@ npm run build:osx
 # Generate a GNU/Linux Electron app
 npm run pack:linux
 ````
-The installers/packages will be generated under the `dist` directory.
+The installers/packages will be generated under the `dist` directory on the root folder of the repository.
 
 ## Disclaimer
 
